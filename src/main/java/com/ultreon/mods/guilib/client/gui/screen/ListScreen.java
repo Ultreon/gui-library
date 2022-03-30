@@ -316,7 +316,8 @@ public final class ListScreen extends Screen {
 
                 int btnIndex = 0;
                 for (GuiEventListener guiEventListener : buttons) {
-                    if (guiEventListener instanceof Button button) {
+                    if (guiEventListener instanceof Button) {
+                        Button button = (Button) guiEventListener;
                         button.x = left + width - 8 - (BUTTON_WIDTH + 4) * (btnIndex + 1);
                         button.y = top + height / 2 - 10;
                         button.render(pose, mouseX, mouseY, partialTicks);

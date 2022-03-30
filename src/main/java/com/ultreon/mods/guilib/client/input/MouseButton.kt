@@ -1,12 +1,12 @@
-package com.ultreon.mods.guilib.client.input;
+package com.ultreon.mods.guilib.client.input
 
-public class MouseButton {
-    public static final int LEFT = 0;
-    public static final int RIGHT = 1;
-    public static final int MIDDLE = 2;
-    public static final int FORWARD =  3;
-    public static final int BACKWARD =  4;
-    public static final int BUTTON_6 =  5;
-    public static final int BUTTON_7 =  6;
-    public static final int BUTTON_8 =  7;
+object MouseButton {
+    const val LEFT = 0
+    const val RIGHT = 1
+    const val MIDDLE = 2
+    const val FORWARD = 3
+    const val BACKWARD = 4
+    const val BUTTON_6 = 5
+    const val BUTTON_7 = 6
+    const val BUTTON_8 = 7
 }

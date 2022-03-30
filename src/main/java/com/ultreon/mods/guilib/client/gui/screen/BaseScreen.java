@@ -12,11 +12,13 @@
 package com.ultreon.mods.guilib.client.gui.screen;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.ultreon.mods.guilib.client.HasContextMenu;
 import com.ultreon.mods.guilib.client.gui.widget.ButtonMenuItem;
 import com.ultreon.mods.guilib.client.gui.widget.ContextMenu;
 import com.ultreon.mods.guilib.client.input.MouseButton;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
@@ -103,20 +105,25 @@ public abstract class BaseScreen extends Screen {
             return true;
         }
 
-        if (isAtTitleBar(mouseX, mouseY)) {
-            if (button == MouseButton.RIGHT) {
-                ContextMenu menu = new ContextMenu((int)mouseX, (int)mouseY, null);
-                menu.add(new ButtonMenuItem(menu, new TextComponent("Close")));
-                placeContextMenu(menu);
-                return true;
-            }
-        } else if (button == MouseButton.RIGHT) {
+        if (button == MouseButton.RIGHT && isAtTitleBar(mouseX, mouseY)) {
+            ContextMenu menu = new ContextMenu((int) mouseX, (int) mouseY, null);
+            menu.add(new ButtonMenuItem(menu, new TextComponent("Close")));
+            placeContextMenu(menu);
+            return true;
+        }
+        if (button == MouseButton.RIGHT) {
             ContextMenu menu = getContextMenu((int) mouseX, (int) mouseY);
+            GuiEventListener it = getChildAt(mouseX, mouseY).orElse(null);
+            if (it instanceof HasContextMenu) {
+                HasContextMenu hasContextMenu = (HasContextMenu) it;
+                hasContextMenu.contextMenu((int) mouseX, (int) mouseY, button);
+            }
             if (menu != null) {
                 placeContextMenu(menu);
                 return true;
             }
-        } else if (button == MouseButton.LEFT && contextMenu != null) {
+        }
+        if (button == MouseButton.LEFT && contextMenu != null) {
             contextMenu.onClose();
             contextMenu = null;
             return true;

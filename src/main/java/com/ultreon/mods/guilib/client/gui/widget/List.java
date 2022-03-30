@@ -208,26 +208,24 @@ public class List extends AbstractWidget implements ContainerEventHandler {
             setFocused(list);
             return true;
         }
-        if (this.searchBox.isMouseOver(x, y) && this.searchBox.mouseClicked(x, y, button)) {
+        if (this.searchBox != null && this.searchBox.isMouseOver(x, y) && this.searchBox.mouseClicked(x, y, button)) {
             setFocused(searchBox);
             return true;
         }
-        
-        return super.mouseClicked(x, y, button);
+
+        return false;
     }
 
     @Override
     public boolean mouseReleased(double x, double y, int button) {
         if (this.list.isMouseOver(x, y) && this.list.mouseReleased(x, y, button)) return true;
-        if (this.searchBox.isMouseOver(x, y) && this.searchBox.mouseReleased(x, y, button)) return true;
-        
-        return super.mouseReleased(x, y, button);
+        return this.searchBox != null && this.searchBox.isMouseOver(x, y) && this.searchBox.mouseReleased(x, y, button);
     }
     
     @Override
     public void mouseMoved(double x, double y) {
         if (this.list.isMouseOver(x, y)) this.list.mouseMoved(x, y);
-        if (this.searchBox.isMouseOver(x, y)) this.searchBox.mouseMoved(x, y);
+        if (this.searchBox != null && this.searchBox.isMouseOver(x, y)) this.searchBox.mouseMoved(x, y);
         
         super.mouseMoved(x, y);
     }
@@ -235,7 +233,8 @@ public class List extends AbstractWidget implements ContainerEventHandler {
     @Override
     public boolean mouseDragged(double x, double y, int button, double fx, double fy) {
         if (this.list.isMouseOver(fx, fy) && this.list.mouseDragged(x, y, button, fx, fy)) return true;
-        if (this.searchBox.isMouseOver(fx, fy) && this.searchBox.mouseDragged(x, y, button, fx, fy)) return true;
+        if (this.searchBox != null && this.searchBox.isMouseOver(fx, fy) && this.searchBox.mouseDragged(x, y, button, fx, fy))
+            return true;
         
         return super.mouseDragged(x, y, button, fx, fy);
     }

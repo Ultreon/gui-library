@@ -18,9 +18,9 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
 import com.ultreon.mods.guilib.UltreonGuiLib;
 import com.ultreon.mods.guilib.client.UserSettings;
-import com.ultreon.mods.guilib.client.gui.widget.ThemedButton;
 import com.ultreon.mods.guilib.client.gui.widget.Label;
 import com.ultreon.mods.guilib.client.gui.widget.List;
+import com.ultreon.mods.guilib.client.gui.widget.ThemedButton;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
@@ -433,29 +433,28 @@ public abstract class GenericMenuScreen extends BaseScreen {
         RenderSystem.setShaderTexture(0, background);
 
         switch (this.titleStyle) {
-            case HIDDEN -> {
-                // Render no title. Only the top border.
+            // Render no title. Only the top border.
+            case HIDDEN:
                 this.blit(pose, left(), top(), 0, 21, width(), 4);
                 index++;
                 curY += 4;
-            }
-            case NORMAL -> {
-                // Render normal title and the top border.
+                break;
+            // Render normal title and the top border.
+            case NORMAL:
                 this.blit(pose, left(), top(), 0, 21, width(), 16);
                 this.font.draw(pose, this.title, (int) (left() + width() / 2f - this.font.width(this.title.getString()) / 2), top() + 6, this.titleColor);
-
                 index++;
                 curY += 16;
-            }
-            case DETACHED -> {
-                // Render detached title and the top border.
+                break;
+            // Render detached title and the top border.
+            case DETACHED:
                 blit(pose, left(), top(), 0, 0, width(), 25);
                 this.font.draw(pose, this.title, (int) (left() + width() / 2f - this.font.width(this.title.getString()) / 2), top() + 6, this.titleColor);
-
                 index++;
                 curY += 25;
-            }
-            default -> throw new IllegalStateException("Unexpected value: " + titleStyle);
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + titleStyle);
         }
 
 
@@ -550,7 +549,8 @@ public abstract class GenericMenuScreen extends BaseScreen {
     }
 
     private void renderRowWidget(Widget widget, int x, int y, int width, int height, @NotNull PoseStack matrices, int mouseX, int mouseY, float partialTicks) {
-        if (widget instanceof AbstractWidget abstractWidget) {
+        if (widget instanceof AbstractWidget) {
+            AbstractWidget abstractWidget = (AbstractWidget) widget;
             abstractWidget.x = x;
             abstractWidget.y = y;
             abstractWidget.setWidth(width);
@@ -588,7 +588,8 @@ public abstract class GenericMenuScreen extends BaseScreen {
     public void tick() {
         for (Row row : rows) {
             for (Widget widget : row.widgets()) {
-                if (widget instanceof EditBox editBox) {
+                if (widget instanceof EditBox) {
+                    EditBox editBox = (EditBox) widget;
                     editBox.tick();
                 }
             }
@@ -598,12 +599,12 @@ public abstract class GenericMenuScreen extends BaseScreen {
     @Override
     public final Vec2 getCloseButtonPos() {
         switch (titleStyle) {
-            case NORMAL -> {
+            case NORMAL: {
                 int iconX = right() - 9 - 5;
                 int iconY = top() + (int) (5 + (21 / 2f - font.lineHeight / 2f) - 4);
                 return new Vec2(iconX, iconY);
             }
-            case DETACHED -> {
+            case DETACHED: {
                 int iconX = right() - 9 - 5;
                 int iconY = top() + 1 + (int) (((25 - 6) / 2f - font.lineHeight / 2f));
                 return new Vec2(iconX, iconY);
@@ -615,7 +616,8 @@ public abstract class GenericMenuScreen extends BaseScreen {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         for (Row row : rows) {
             for (Widget widget : row.widgets()) {
-                if (widget instanceof EditBox editBox) {
+                if (widget instanceof EditBox) {
+                    EditBox editBox = (EditBox) widget;
                     if (editBox.isFocused()) {
                         editBox.mouseClicked(mouseX, mouseY, button);
                     }
