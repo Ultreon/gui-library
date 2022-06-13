@@ -12,6 +12,8 @@
 package com.ultreon.mods.guilib.client.gui.widget;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.ultreon.mods.guilib.client.gui.ReloadsTheme;
+import com.ultreon.mods.guilib.client.gui.Theme;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.Widget;
@@ -19,22 +21,25 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import org.jetbrains.annotations.NotNull;
 
-public class Label implements Widget {
+public class Label implements Widget, ReloadsTheme {
     protected final Minecraft minecraft;
     protected final Font font;
     public int y;
     public int x;
     private Component message;
     private boolean shadow;
-    private int color = 0xffffffff;
+    private int color;
+    private Theme theme;
 
-    public Label(int x, int y, Component message) {
-        this(x, y, message, false);
+    public Label(int x, int y, Component message, Theme theme) {
+        this(x, y, message, false, theme);
     }
 
-    public Label(int x, int y, Component message, boolean shadow) {
+    public Label(int x, int y, Component message, boolean shadow, Theme theme) {
         this.x = x;
         this.y = y;
+        this.theme = theme;
+        this.color = theme.getTextColor();
         this.message = message;
         this.minecraft = Minecraft.getInstance();
         this.font = minecraft.font;
@@ -76,5 +81,19 @@ public class Label implements Widget {
 
     public void setMessage(String s) {
         setMessage(new TextComponent(s));
+    }
+
+    public Theme getTheme() {
+        return theme;
+    }
+
+    public void setTheme(Theme theme) {
+        this.theme = theme;
+        this.color = theme.getTextColor();
+    }
+
+    @Override
+    public void reloadTheme() {
+        this.color = theme.getTextColor();
     }
 }

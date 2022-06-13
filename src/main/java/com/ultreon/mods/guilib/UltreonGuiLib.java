@@ -1,5 +1,9 @@
 package com.ultreon.mods.guilib;
 
+import com.ultreon.mods.guilib.client.gui.ReloadsTheme;
+import com.ultreon.mods.guilib.client.gui.Theme;
+import com.ultreon.mods.guilib.client.gui.screen.TitleStyle;
+import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.server.ServerStartingEvent;
@@ -19,7 +23,7 @@ import java.util.Objects;
  * Main
  */
 @Mod(UltreonGuiLib.MOD_ID)
-public class UltreonGuiLib {
+public class UltreonGuiLib implements ReloadsTheme {
     // Mod Constants.
     public static final String MOD_ID = "ultreon_gui_lib";
 
@@ -31,6 +35,7 @@ public class UltreonGuiLib {
     public static final String MOD_VERSION;
     public static final String MOD_DESCRIPTION;
     public static final String MOD_NAMESPACE;
+    private static UltreonGuiLib instance;
 
     static {
         IModInfo info = ModList.get().getMods().stream().filter(modInfo -> Objects.equals(modInfo.getModId(), MOD_ID)).findFirst().orElseThrow(IllegalStateException::new);
@@ -45,11 +50,22 @@ public class UltreonGuiLib {
      * Mod manager construction creator that exists to create the mod instance that is needed for the mod to exist and even work lol.
      */
     public UltreonGuiLib() {
+        instance = this;
+
         // Register the setup method for modloading
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
+
+        Config.register();
+
+        // Register mod configuration screen.
+        Config.registerConfigScreen();
+    }
+
+    public static UltreonGuiLib get() {
+        return instance;
     }
 
     /**
@@ -73,6 +89,34 @@ public class UltreonGuiLib {
             return MOD_DEV_OVERRIDE;
         }
         return !FMLEnvironment.production;
+    }
+
+    public static Theme getTheme() {
+        return Config.THEME.get();
+    }
+
+    public static void setTheme(Theme theme) {
+        Config.THEME.set(theme);
+        Config.THEME.save();
+
+        instance.reloadTheme();
+    }
+
+    public static TitleStyle getTitleStyle() {
+        return Config.TITLE_STYLE.get();
+    }
+
+    public static void setTitleStyle(TitleStyle style) {
+        Config.TITLE_STYLE.set(style);
+        Config.TITLE_STYLE.save();
+
+        instance.reloadTheme();
+    }
+
+    public void reloadTheme() {
+        if (Minecraft.getInstance().screen instanceof ReloadsTheme) {
+            ((ReloadsTheme) Minecraft.getInstance().screen).reloadTheme();
+        }
     }
 
     private void setup(final FMLCommonSetupEvent event) {

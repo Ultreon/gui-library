@@ -16,8 +16,10 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
+import com.ultreon.mods.guilib.Config;
 import com.ultreon.mods.guilib.UltreonGuiLib;
-import com.ultreon.mods.guilib.client.UserSettings;
+import com.ultreon.mods.guilib.client.gui.ReloadsTheme;
+import com.ultreon.mods.guilib.client.gui.Theme;
 import com.ultreon.mods.guilib.client.gui.widget.Label;
 import com.ultreon.mods.guilib.client.gui.widget.List;
 import com.ultreon.mods.guilib.client.gui.widget.ThemedButton;
@@ -43,36 +45,38 @@ import java.util.Objects;
 import static net.minecraft.client.gui.screens.TitleScreen.PANORAMA_OVERLAY;
 
 @SuppressWarnings({"UnusedReturnValue", "unused", "SameParameterValue"})
-public abstract class GenericMenuScreen extends BaseScreen {
-    public final ResourceLocation background;
+public abstract class GenericMenuScreen extends BaseScreen implements ReloadsTheme {
+    public ResourceLocation background;
 
     protected final Minecraft mc = Minecraft.getInstance();
 
-    @Nullable private final Screen back;
+    @Nullable
+    private final Screen back;
     private final java.util.List<Row> rows = new ArrayList<>();
     private boolean frozen = false;
 
-    private final TitleStyle titleStyle;
+    private TitleStyle titleStyle;
     private int titleColor;
     private static final int TITLE_COLOR = 0xff606060;
     private static final int TITLE_COLOR_DARK = 0xffffffff;
     private final boolean panorama;
-    private final boolean darkMode;
+    private Theme theme;
     private boolean initialized;
 
     protected GenericMenuScreen(Properties properties) {
         super(properties.title);
-        this.darkMode = properties.darkMode;
+        this.theme = properties.theme;
         this.panorama = properties.panorama;
 
-        this.titleColor = properties.darkMode ? TITLE_COLOR_DARK : TITLE_COLOR;
+        this.titleColor = theme.getTitleColor();
         this.titleStyle = properties.titleStyle;
 
         this.font = Minecraft.getInstance().font;
         this.minecraft = Minecraft.getInstance();
 
         this.back = properties.back;
-        this.background = UltreonGuiLib.res(properties.darkMode ? "textures/gui/generic_menu_dark.png" : "textures/gui/generic_menu.png");
+
+        reloadTheme();
     }
 
     protected final boolean initialized() {
@@ -96,12 +100,12 @@ public abstract class GenericMenuScreen extends BaseScreen {
 
     @SuppressWarnings("unused")
     public Pair<Button, Button> addButtonRow(Component componentL, Button.OnPress onPressL, Button.OnTooltip onTooltipL, Component componentR, Button.OnPress onPressR, Button.OnTooltip onTooltipR) {
-        return addButtonRow(componentL, darkMode ? ThemedButton.Type.DARK : ThemedButton.Type.NORMAL, onPressL, onTooltipL, componentR, darkMode ? ThemedButton.Type.DARK : ThemedButton.Type.NORMAL, onPressR, onTooltipR);
+        return addButtonRow(componentL, ThemedButton.Type.of(theme), onPressL, onTooltipL, componentR, ThemedButton.Type.of(theme), onPressR, onTooltipR);
     }
 
     @SuppressWarnings("unused")
     public Pair<Button, Button> addButtonRow(Component componentL, Runnable onPressL, Button.OnTooltip onTooltipL, Component componentR, Runnable onPressR, Button.OnTooltip onTooltipR) {
-        return addButtonRow(componentL, darkMode ? ThemedButton.Type.DARK : ThemedButton.Type.NORMAL, btn -> onPressL.run(), onTooltipL, componentR, darkMode ? ThemedButton.Type.DARK : ThemedButton.Type.NORMAL, btn -> onPressR.run(), onTooltipR);
+        return addButtonRow(componentL, ThemedButton.Type.of(theme), btn -> onPressL.run(), onTooltipL, componentR, ThemedButton.Type.of(theme), btn -> onPressR.run(), onTooltipR);
     }
 
     @SuppressWarnings("unused")
@@ -111,22 +115,22 @@ public abstract class GenericMenuScreen extends BaseScreen {
 
     @SuppressWarnings("unused")
     public Pair<Button, Button> addButtonRow(Component componentL, ThemedButton.Type typeL, Button.OnPress onPressL, Component componentR, Button.OnPress onPressR) {
-        return addButtonRow(componentL, typeL, onPressL, componentR, darkMode ? ThemedButton.Type.DARK : ThemedButton.Type.NORMAL, onPressR);
+        return addButtonRow(componentL, typeL, onPressL, componentR, ThemedButton.Type.of(theme), onPressR);
     }
 
     @SuppressWarnings("unused")
     public Pair<Button, Button> addButtonRow(Component componentL, ThemedButton.Type typeL, Runnable onPressL, Component componentR, Runnable onPressR) {
-        return addButtonRow(componentL, typeL, btn -> onPressL.run(), componentR, darkMode ? ThemedButton.Type.DARK : ThemedButton.Type.NORMAL, btn -> onPressR.run());
+        return addButtonRow(componentL, typeL, btn -> onPressL.run(), componentR, ThemedButton.Type.of(theme), btn -> onPressR.run());
     }
 
     @SuppressWarnings("unused")
     public Pair<Button, Button> addButtonRow(Component componentL, Button.OnPress onPressL, Component componentR, ThemedButton.Type typeR, Button.OnPress onPressR) {
-        return addButtonRow(componentL, darkMode ? ThemedButton.Type.DARK : ThemedButton.Type.NORMAL, onPressL, componentR, typeR, onPressR);
+        return addButtonRow(componentL, ThemedButton.Type.of(theme), onPressL, componentR, typeR, onPressR);
     }
 
     @SuppressWarnings("unused")
     public Pair<Button, Button> addButtonRow(Component componentL, Runnable onPressL, Component componentR, ThemedButton.Type typeR, Runnable onPressR) {
-        return addButtonRow(componentL, darkMode ? ThemedButton.Type.DARK : ThemedButton.Type.NORMAL, btn -> onPressL.run(), componentR, typeR, btn -> onPressR.run());
+        return addButtonRow(componentL, ThemedButton.Type.of(theme), btn -> onPressL.run(), componentR, typeR, btn -> onPressR.run());
     }
 
     @SuppressWarnings("unused")
@@ -178,12 +182,12 @@ public abstract class GenericMenuScreen extends BaseScreen {
 
     @SuppressWarnings("unused")
     public Button addButtonRow(Component component, Runnable onPress, Button.OnTooltip onTooltip) {
-        return addButtonRow(component, darkMode ? ThemedButton.Type.DARK : ThemedButton.Type.NORMAL, btn -> onPress.run(), onTooltip);
+        return addButtonRow(component, ThemedButton.Type.of(theme), btn -> onPress.run(), onTooltip);
     }
 
     @SuppressWarnings("unused")
     public Button addButtonRow(Component component, Button.OnPress onPress, Button.OnTooltip onTooltip) {
-        return addButtonRow(component, darkMode ? ThemedButton.Type.DARK : ThemedButton.Type.NORMAL, onPress, onTooltip);
+        return addButtonRow(component, ThemedButton.Type.of(theme), onPress, onTooltip);
     }
 
     @SuppressWarnings("unused")
@@ -250,29 +254,29 @@ public abstract class GenericMenuScreen extends BaseScreen {
             return null;
         }
 
-        Label userWidget = new Label(0, 0, component);
+        Label userWidget = new Label(0, 0, component, theme);
         this.rows.add(new Row(ImmutableList.of(userWidget), font.lineHeight + 4, width() - 5 - 5, font.lineHeight, 8, 2, 4, 0, 226));
         addRenderableOnly(userWidget);
         return userWidget;
     }
 
     @SuppressWarnings("unused")
-    public List addUserListRow(int count) {
-        return addUserListRow(count, false);
+    public List addListRow(int count) {
+        return addListRow(count, false);
     }
 
     @SuppressWarnings("unused")
-    public List addUserListRow() {
-        return addUserListRow(false);
+    public List addListRow() {
+        return addListRow(false);
     }
 
     @SuppressWarnings("unused")
-    public List addUserListRow(boolean hasSearch) {
-        return addUserListRow(3, hasSearch);
+    public List addListRow(boolean hasSearch) {
+        return addListRow(3, hasSearch);
     }
 
     @SuppressWarnings("unused")
-    public List addUserListRow(int count, boolean hasSearch) {
+    public List addListRow(int count, boolean hasSearch) {
         if (this.frozen) {
             return null;
         }
@@ -434,27 +438,26 @@ public abstract class GenericMenuScreen extends BaseScreen {
 
         switch (this.titleStyle) {
             // Render no title. Only the top border.
-            case HIDDEN:
+            case HIDDEN -> {
                 this.blit(pose, left(), top(), 0, 21, width(), 4);
                 index++;
                 curY += 4;
-                break;
+            }
             // Render normal title and the top border.
-            case NORMAL:
+            case NORMAL -> {
                 this.blit(pose, left(), top(), 0, 21, width(), 16);
                 this.font.draw(pose, this.title, (int) (left() + width() / 2f - this.font.width(this.title.getString()) / 2), top() + 6, this.titleColor);
                 index++;
                 curY += 16;
-                break;
+            }
             // Render detached title and the top border.
-            case DETACHED:
+            case DETACHED -> {
                 blit(pose, left(), top(), 0, 0, width(), 25);
                 this.font.draw(pose, this.title, (int) (left() + width() / 2f - this.font.width(this.title.getString()) / 2), top() + 6, this.titleColor);
                 index++;
                 curY += 25;
-                break;
-            default:
-                throw new IllegalStateException("Unexpected value: " + titleStyle);
+            }
+            default -> throw new IllegalStateException("Unexpected value: " + titleStyle);
         }
 
 
@@ -463,6 +466,15 @@ public abstract class GenericMenuScreen extends BaseScreen {
         super.render(pose, mouseX, mouseY, frameTime);
 
         onPostRender();
+    }
+
+    @Override
+    public void onClose() {
+        if (back != null) {
+            Minecraft.getInstance().setScreen(back);
+        } else {
+            super.onClose();
+        }
     }
 
     @SuppressWarnings({"DuplicatedCode", "ConstantConditions", "UnusedAssignment"})
@@ -549,8 +561,7 @@ public abstract class GenericMenuScreen extends BaseScreen {
     }
 
     private void renderRowWidget(Widget widget, int x, int y, int width, int height, @NotNull PoseStack matrices, int mouseX, int mouseY, float partialTicks) {
-        if (widget instanceof AbstractWidget) {
-            AbstractWidget abstractWidget = (AbstractWidget) widget;
+        if (widget instanceof AbstractWidget abstractWidget) {
             abstractWidget.x = x;
             abstractWidget.y = y;
             abstractWidget.setWidth(width);
@@ -588,8 +599,7 @@ public abstract class GenericMenuScreen extends BaseScreen {
     public void tick() {
         for (Row row : rows) {
             for (Widget widget : row.widgets()) {
-                if (widget instanceof EditBox) {
-                    EditBox editBox = (EditBox) widget;
+                if (widget instanceof EditBox editBox) {
                     editBox.tick();
                 }
             }
@@ -599,12 +609,12 @@ public abstract class GenericMenuScreen extends BaseScreen {
     @Override
     public final Vec2 getCloseButtonPos() {
         switch (titleStyle) {
-            case NORMAL: {
+            case NORMAL -> {
                 int iconX = right() - 9 - 5;
                 int iconY = top() + (int) (5 + (21 / 2f - font.lineHeight / 2f) - 4);
                 return new Vec2(iconX, iconY);
             }
-            case DETACHED: {
+            case DETACHED -> {
                 int iconX = right() - 9 - 5;
                 int iconY = top() + 1 + (int) (((25 - 6) / 2f - font.lineHeight / 2f));
                 return new Vec2(iconX, iconY);
@@ -616,8 +626,7 @@ public abstract class GenericMenuScreen extends BaseScreen {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         for (Row row : rows) {
             for (Widget widget : row.widgets()) {
-                if (widget instanceof EditBox) {
-                    EditBox editBox = (EditBox) widget;
+                if (widget instanceof EditBox editBox) {
                     if (editBox.isFocused()) {
                         editBox.mouseClicked(mouseX, mouseY, button);
                     }
@@ -630,6 +639,22 @@ public abstract class GenericMenuScreen extends BaseScreen {
 
     public boolean isPauseScreen() {
         return false;
+    }
+
+    public void reloadTheme() {
+        super.reloadTheme();
+        this.theme = UltreonGuiLib.getTheme();
+        this.titleColor = theme.getTitleColor();
+        this.titleStyle = UltreonGuiLib.getTitleStyle();
+        this.background = UltreonGuiLib.res(switch (theme) {
+            case DARK -> "textures/gui/menu/generic/generic_menu_dark.png";
+            case LIGHT -> "textures/gui/menu/generic/generic_menu_light.png";
+            case MIX -> "textures/gui/menu/generic/generic_menu_mix.png";
+            default -> "textures/gui/menu/generic/generic_menu.png";
+        });
+        for (Row row : rows) {
+            row.reloadTheme();
+        }
     }
 
     private record Row(ImmutableList<Widget> widgets, int height, int widgetWidth, int widgetHeight,
@@ -650,14 +675,26 @@ public abstract class GenericMenuScreen extends BaseScreen {
         public Row(ImmutableList<Widget> widgets, int height, int widgetWidth, int widgetHeight, int deltaX, int deltaY, int widgetOffset, int u, int v, int uh) {
             this(widgets, height, widgetWidth, widgetHeight, deltaX, deltaY, widgetOffset, u, v, 176, uh);
         }
+
+        public void reloadTheme() {
+            for (Widget widget : widgets) {
+                if (widget instanceof ReloadsTheme abstractWidget) {
+                    abstractWidget.reloadTheme();
+                }
+            }
+        }
     }
 
     public static class Properties {
         private Component title;
-        private TitleStyle titleStyle = TitleStyle.NORMAL;
-        private boolean darkMode = UserSettings.get().hasDarkMode();
+        private TitleStyle titleStyle = Config.TITLE_STYLE.get();
+        private final Theme theme = Config.THEME.get();
+        @Deprecated
+        @SuppressWarnings("FieldCanBeLocal")
+        private boolean darkMode = theme == Theme.DARK;
         private boolean panorama = Minecraft.getInstance().level == null;
-        @Nullable private Screen back = null;
+        @Nullable
+        private Screen back = null;
 
         public Properties title(Component title) {
             this.title = title;
@@ -679,6 +716,7 @@ public abstract class GenericMenuScreen extends BaseScreen {
             return this;
         }
 
+        @Deprecated
         public Properties darkMode(boolean darkMode) {
             this.darkMode = darkMode;
             return this;

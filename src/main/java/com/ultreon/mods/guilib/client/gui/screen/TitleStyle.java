@@ -11,18 +11,47 @@
 
 package com.ultreon.mods.guilib.client.gui.screen;
 
+import com.ultreon.mods.guilib.client.gui.Theme;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import org.checkerframework.checker.nullness.qual.NonNull;
+
 public enum TitleStyle {
-    HIDDEN(4, 0),
-    NORMAL(16, 16),
-    DETACHED(25, 20),
+    HIDDEN(4, 0, "hidden"),
+    NORMAL(16, 16, "normal"),
+    DETACHED(25, 20, "detached"),
     ;
 
     public final int renderHeight;
     public final int height;
+    private final String name;
 
-    TitleStyle(int renderHeight, int height) {
+    TitleStyle(int renderHeight, int height, String name) {
 
         this.renderHeight = renderHeight;
         this.height = height;
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    @NonNull
+    public Component getDisplayName() {
+        return new TranslatableComponent(getDescriptionId());
+    }
+
+    @NonNull
+    private String getDescriptionId() {
+        return "ultreon.gui_lib.title_style." + name;
+    }
+
+    public TitleStyle next() {
+        return TitleStyle.values()[(ordinal() + 1) % TitleStyle.values().length];
+    }
+
+    public TitleStyle previous() {
+        return TitleStyle.values()[(ordinal() - 1 + Theme.values().length) % TitleStyle.values().length];
     }
 }

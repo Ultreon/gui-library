@@ -16,10 +16,16 @@ import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 
 public class ButtonMenuItem extends AbstractButtonMenuItem {
-    private OnPress onPress;
+    private final OnPress onPress;
 
     public ButtonMenuItem(ContextMenu menu, Component message) {
+        this(menu, message, btn -> {
+        });
+    }
+
+    public ButtonMenuItem(ContextMenu menu, Component message, OnPress onPress) {
         super(menu, message);
+        this.onPress = onPress;
     }
 
     @Override

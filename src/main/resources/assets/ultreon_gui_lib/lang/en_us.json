@@ -1,0 +1,12 @@
+{
+  "gui.ultreon.gui_lib.config.title": "User Configuration",
+  "gui.ultreon.gui_lib.config.theme": "Theme: ",
+  "gui.ultreon.gui_lib.config.title_style": "Title style: ",
+  "ultreon.gui_lib.theme.light": "Light",
+  "ultreon.gui_lib.theme.normal": "Vanilla",
+  "ultreon.gui_lib.theme.mix": "Mixed",
+  "ultreon.gui_lib.theme.dark": "Dark",
+  "ultreon.gui_lib.title_style.normal": "Normal",
+  "ultreon.gui_lib.title_style.detached": "Detached",
+  "ultreon.gui_lib.title_style.hidden": "Hidden"
+}

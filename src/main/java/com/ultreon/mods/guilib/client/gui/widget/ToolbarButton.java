@@ -1,6 +1,5 @@
 package com.ultreon.mods.guilib.client.gui.widget;
 
-import com.ultreon.mods.guilib.client.input.MouseButton;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
@@ -18,7 +17,7 @@ public class ToolbarButton extends ToolbarItem {
     }
 
     public ToolbarButton(int x, int y, int width, Component message, @Nullable CommandCallback command) {
-        super(x, y, width, message);
+        super(x, y, width, 20, message);
         this.command = command;
     }
 
@@ -35,14 +34,19 @@ public class ToolbarButton extends ToolbarItem {
         }
     }
 
-    @Override
-    public boolean mouseClicked(double x, double y, int button) {
-        if (isMouseOver(x, y) && button == MouseButton.LEFT) {
-            click();
-            return true;
-        }
+//    @Override
+//    public boolean mouseClicked(double x, double y, int button) {
+//        if (isMouseOver(x, y) && button == MouseButton.LEFT) {
+//            click();
+//            return true;
+//        }
+//
+//        return super.mouseClicked(x, y, button);
+//    }
 
-        return super.mouseClicked(x, y, button);
+    @Override
+    public void onClick(double pMouseX, double pMouseY) {
+        click();
     }
 
     public void setCommand(@Nullable CommandCallback command) {

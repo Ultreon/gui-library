@@ -15,8 +15,8 @@ import net.minecraft.network.chat.Component;
 
 public abstract class MenuItem extends BaseWidget {
     private final ContextMenu menu;
-    private int minWidth;
-    private int maxWidth;
+    private int minWidth = 0;
+    private int maxWidth = Integer.MAX_VALUE;
 
     public MenuItem(int height, ContextMenu menu, Component message) {
         super(menu.x, menu.y, menu.getWidth(), height, message);

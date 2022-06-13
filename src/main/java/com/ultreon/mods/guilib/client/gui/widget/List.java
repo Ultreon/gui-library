@@ -14,7 +14,10 @@ package com.ultreon.mods.guilib.client.gui.widget;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.ultreon.mods.guilib.Config;
 import com.ultreon.mods.guilib.UltreonGuiLib;
+import com.ultreon.mods.guilib.client.gui.ReloadsTheme;
+import com.ultreon.mods.guilib.client.gui.Theme;
 import com.ultreon.mods.guilib.client.gui.screen.GenericMenuScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -42,8 +45,10 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 @SuppressWarnings({"FieldCanBeLocal", "UnnecessaryLocalVariable"})
-public class List extends AbstractWidget implements ContainerEventHandler {
-    public static final ResourceLocation GUI_LOCATION = UltreonGuiLib.res("textures/gui/widgets/list.png");
+public class List extends AbstractWidget implements ContainerEventHandler, ReloadsTheme {
+    public static final ResourceLocation TEXTURE_DARK = UltreonGuiLib.res("textures/gui/widgets/list/dark.png");
+    public static final ResourceLocation TEXTURE_NORMAL = UltreonGuiLib.res("textures/gui/widgets/list/normal.png");
+    public static final ResourceLocation TEXTURE_LIGHT = UltreonGuiLib.res("textures/gui/widgets/list/light.png");
     public static final ResourceLocation LIST_ICONS = UltreonGuiLib.res("textures/gui/list_icons.png");
 
     private static final int ICON_SIZE = 12;
@@ -56,6 +61,7 @@ public class List extends AbstractWidget implements ContainerEventHandler {
     private final int headerHeight;
 
     private final java.util.List<GuiEventListener> children;
+    private ResourceLocation guiTexture;
     private EditBox searchBox;
     private final ListWidget list;
     private final Font font;
@@ -67,18 +73,30 @@ public class List extends AbstractWidget implements ContainerEventHandler {
     private final int count;
     private final boolean hasSearch;
     private boolean isDragging;
+    private Theme theme;
 
     public List(GenericMenuScreen screen, int x, int y, int width, int count, Component title) {
         this(screen, x, y, width, count, true, title);
     }
 
     public List(GenericMenuScreen screen, int x, int y, int width, int count, boolean hasSearch, Component title) {
-        super(x, y, width, width, title);
+        this(screen, x, y, width, count, hasSearch, title, Config.THEME.get());
+    }
+
+    public List(GenericMenuScreen screen, int x, int y, int width, int count, boolean hasSearch, Component title, Theme theme) {
+        super(x, y, width, 0, title);
         this.screen = screen;
         this.count = count;
         this.hasSearch = hasSearch;
         this.mc = Minecraft.getInstance();
         this.font = mc.font;
+        this.theme = theme;
+
+        switch (theme) {
+            case DARK -> guiTexture = TEXTURE_DARK;
+            case LIGHT, MIX -> guiTexture = TEXTURE_LIGHT;
+            default -> guiTexture = TEXTURE_NORMAL;
+        }
 
         this.headerHeight = hasSearch ? 18 : 0;
 
@@ -115,8 +133,6 @@ public class List extends AbstractWidget implements ContainerEventHandler {
 
             @Override
             public void render(@NotNull PoseStack pose, int mouseX, int mouseY, float frameTime) {
-//                this.width = screen.width;
-//                this.height = UserListWidget.this.height - LIST_BORDER_WIDTH * 2 + UserListWidget.this.headerHeight;
                 this.y0 = List.this.y + LIST_BORDER_WIDTH + List.this.headerHeight;
                 this.y1 = List.this.y + LIST_BORDER_WIDTH + List.this.height - LIST_BORDER_WIDTH * 2;
 
@@ -148,7 +164,7 @@ public class List extends AbstractWidget implements ContainerEventHandler {
 
     @Override
     public void render(@NotNull PoseStack pose, int mouseX, int mouseY, float frameTime) {
-        RenderSystem.setShaderTexture(0, GUI_LOCATION);
+        RenderSystem.setShaderTexture(0, guiTexture);
         // List border
         final int lb = LIST_BORDER_WIDTH; // lb == List Border
         
@@ -192,9 +208,6 @@ public class List extends AbstractWidget implements ContainerEventHandler {
 
         // Search glass
         blit(pose, x + lb + 3, y + lb + 3, 12, 12, 51, 1, 12, 12, TEX_W, TEX_H);
-        
-        // Widget render.
-//        super.render(pose, mouseX, mouseY, frameTime);
 
         this.list.render(pose, mouseX, mouseY, frameTime);
         if (searchBox != null) {
@@ -354,10 +367,29 @@ public class List extends AbstractWidget implements ContainerEventHandler {
         return entry;
     }
 
+    @Override
+    public void reloadTheme() {
+        this.theme = UltreonGuiLib.getTheme();
+        switch (theme) {
+            case DARK -> guiTexture = TEXTURE_DARK;
+            case LIGHT, MIX -> guiTexture = TEXTURE_LIGHT;
+            default -> guiTexture = TEXTURE_NORMAL;
+        }
+
+        if (list != null) {
+            list.reloadTheme();
+        }
+    }
+
+    public void setAddEntries(Consumer<ListWidget> consumer) {
+        this.list.setAddEntries(consumer);
+    }
+
     public static class ListWidget extends ContainerObjectSelectionList<ListWidget.Entry> {
         private final Minecraft mc;
         private final List widget;
         private final Object entriesLock = new Object();
+        private ResourceLocation guiTexture;
         private String query;
         private Consumer<ListWidget> addEntries;
 
@@ -366,6 +398,7 @@ public class List extends AbstractWidget implements ContainerEventHandler {
             this.mc = mc;
 
             this.widget = widget;
+            this.guiTexture = widget.guiTexture;
 
             this.setRenderSelection(false);
             this.setRenderBackground(false);
@@ -421,6 +454,15 @@ public class List extends AbstractWidget implements ContainerEventHandler {
             RenderSystem.disableScissor();
         }
 
+        @Override
+        public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
+            if (pButton == 0) {
+                Entry entry = getEntryAtPosition(pMouseX, pMouseY);
+                if (entry != null && entry.click()) return true;
+            }
+            return super.mouseClicked(pMouseX, pMouseY, pButton);
+        }
+
         public void search(String text) {
             query = text;
             reloadEntries();
@@ -429,7 +471,6 @@ public class List extends AbstractWidget implements ContainerEventHandler {
         private void reloadEntries() {
             synchronized (entriesLock) {
                 this.clearEntries();
-
                 addEntries();
             }
         }
@@ -460,6 +501,12 @@ public class List extends AbstractWidget implements ContainerEventHandler {
             this.addEntries = addEntries;
         }
 
+        public void reloadTheme() {
+            this.guiTexture = widget.guiTexture;
+            this.reloadEntries();
+        }
+
+        @SuppressWarnings("unused")
         @OnlyIn(Dist.CLIENT)
         public static class Entry extends ContainerObjectSelectionList.Entry<Entry> {
             public static final int NO_DESC_TEXT_COLOR = FastColor.ARGB32.color(255, 74, 74, 74);
@@ -480,10 +527,12 @@ public class List extends AbstractWidget implements ContainerEventHandler {
             private final Component description;
             private final java.util.List<Button> buttons;
             private float ticksTooltip;
+            private final ResourceLocation guiTexture;
 
             public Entry(@NotNull Minecraft minecraft, @NotNull ListWidget list, @NotNull String title, @javax.annotation.Nullable String description, @NotNull Supplier<@Nullable ResourceLocation> texture, int u, int v, int uWidth, int vHeight, int texW, int texH) {
                 this.mc = minecraft;
                 this.list = list;
+                this.guiTexture = list.guiTexture;
                 this.entryTitle = title;
                 this.description = description == null ? TextComponent.EMPTY : new TextComponent(description);
                 this.texture = texture;
@@ -505,7 +554,7 @@ public class List extends AbstractWidget implements ContainerEventHandler {
                 final int k = i + 8 + 4 + 2;
                 final int l = top + (height - mc.font.lineHeight) / 2;
 
-                RenderSystem.setShaderTexture(0, GUI_LOCATION);
+                RenderSystem.setShaderTexture(0, guiTexture);
 
                 // Entry section
                 final int es = 4;
@@ -554,7 +603,7 @@ public class List extends AbstractWidget implements ContainerEventHandler {
                 RenderSystem.enableBlend();
                 blit(pose, i, j, ICON_SIZE, ICON_SIZE, u, v, uWidth, vHeight, texW, texH);
                 RenderSystem.disableBlend();
-                this.mc.font.draw(pose, this.entryTitle, (float) k, (float) l + 1, TITLE_COLOR);
+                this.mc.font.draw(pose, this.entryTitle, (float) k, (float) l + 1, list.widget.theme.getTextColor());
 
                 float f = this.ticksTooltip;
 
@@ -589,8 +638,11 @@ public class List extends AbstractWidget implements ContainerEventHandler {
 
             @Override
             public boolean mouseClicked(double p_94695_, double p_94696_, int p_94697_) {
+                return true;
+            }
+
+            public boolean click() {
                 list.setSelected(this);
-                super.mouseClicked(p_94695_, p_94696_, p_94697_);
                 return true;
             }
         }

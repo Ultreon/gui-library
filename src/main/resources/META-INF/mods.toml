@@ -4,9 +4,9 @@
 # Note that there are a couple of TOML lists in this file.
 # Find more information on toml format here:  https://github.com/toml-lang/toml
 # The name of the mod loader type to load - for regular FML @Mod mods it should be javafml
-modLoader = "kotlinforforge"
+modLoader = "javafml"
 # Change this if you require a certain version of KotlinForForge
-loaderVersion = "[3,)"
+loaderVersion = "[39,)"
 # The license for you mod. This is mandatory metadata and allows for easier comprehension of your redistributive properties.
 # Review your options at https://choosealicense.com/. All rights reserved is the default copyright stance, and is thus the default here.
 license = "GNU LGPL 3.0"

@@ -19,6 +19,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
+import java.util.Optional;
 
 @OnlyIn(Dist.CLIENT)
 public abstract class AbstractContainerWidget extends AbstractWidget implements ContainerEventHandler {
@@ -38,12 +39,62 @@ public abstract class AbstractContainerWidget extends AbstractWidget implements 
       this.isDragging = p_94681_;
    }
 
-   @Nullable
-   public GuiEventListener getFocused() {
-      return this.focused;
-   }
+    @Nullable
+    public GuiEventListener getFocused() {
+        return this.focused;
+    }
 
-   public void setFocused(@Nullable GuiEventListener p_94677_) {
-      this.focused = p_94677_;
-   }
+    public void setFocused(@Nullable GuiEventListener p_94677_) {
+        this.focused = p_94677_;
+    }
+
+    @Override
+    public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
+        return ContainerEventHandler.super.mouseClicked(pMouseX, pMouseY, pButton);
+    }
+
+    @Override
+    public boolean mouseDragged(double pMouseX, double pMouseY, int pButton, double pDragX, double pDragY) {
+        return ContainerEventHandler.super.mouseDragged(pMouseX, pMouseY, pButton, pDragX, pDragY);
+    }
+
+    @Override
+    public boolean mouseReleased(double pMouseX, double pMouseY, int pButton) {
+        return ContainerEventHandler.super.mouseReleased(pMouseX, pMouseY, pButton);
+    }
+
+    @Override
+    public boolean mouseScrolled(double pMouseX, double pMouseY, double pDelta) {
+        return ContainerEventHandler.super.mouseScrolled(pMouseX, pMouseY, pDelta);
+    }
+
+    @Override
+    public void mouseMoved(double pMouseX, double pMouseY) {
+        ContainerEventHandler.super.mouseMoved(pMouseX, pMouseY);
+    }
+
+    @Override
+    public boolean keyPressed(int pKeyCode, int pScanCode, int pModifiers) {
+        return ContainerEventHandler.super.keyPressed(pKeyCode, pScanCode, pModifiers);
+    }
+
+    @Override
+    public boolean keyReleased(int pKeyCode, int pScanCode, int pModifiers) {
+        return ContainerEventHandler.super.keyReleased(pKeyCode, pScanCode, pModifiers);
+    }
+
+    @Override
+    public boolean charTyped(char pCodePoint, int pModifiers) {
+        return ContainerEventHandler.super.charTyped(pCodePoint, pModifiers);
+    }
+
+    @Override
+    public boolean changeFocus(boolean pFocus) {
+        return ContainerEventHandler.super.changeFocus(pFocus);
+    }
+
+    @Override
+    public Optional<GuiEventListener> getChildAt(double pMouseX, double pMouseY) {
+        return ContainerEventHandler.super.getChildAt(pMouseX, pMouseY);
+    }
 }

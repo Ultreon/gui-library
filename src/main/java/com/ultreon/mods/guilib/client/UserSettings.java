@@ -3,6 +3,7 @@ package com.ultreon.mods.guilib.client;
 import com.google.gson.*;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import com.ultreon.mods.guilib.client.gui.Theme;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import it.unimi.dsi.fastutil.bytes.ByteConsumer;
 import it.unimi.dsi.fastutil.doubles.DoubleConsumer;
@@ -20,9 +21,11 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.function.Consumer;
 
+@Deprecated
 public class UserSettings {
     private static final UserSettings INSTANCE = new UserSettings();
     private static final Gson GSON = new Gson();
+    private Theme theme;
 
     public static UserSettings get() {
         return INSTANCE;
@@ -33,8 +36,6 @@ public class UserSettings {
         out.setIndent("  ");
         return out;
     }
-
-    private boolean darkMode = true;
 
     public UserSettings() {
         load();
@@ -52,7 +53,16 @@ public class UserSettings {
     }
 
     private void load(JsonObject root) {
-        getBoolean(root, "dark_mode", val -> darkMode = val);
+        getString(root, "theme", (name) -> theme = Theme.fromIdOrDefault(name));
+    }
+
+    public void save() {
+        JsonObject root = new JsonObject();
+        save(root);
+    }
+
+    private void save(JsonObject root) {
+        root.addProperty("theme", theme.id());
     }
 
     public void getString(JsonObject json, String key, Consumer<String> consumer) {
@@ -128,19 +138,18 @@ public class UserSettings {
     }
 
     public boolean hasDarkMode() {
-        return darkMode;
+        return theme == Theme.DARK;
     }
 
     public void setDarkMode(boolean darkMode) {
-        this.darkMode = darkMode;
+        theme = darkMode ? Theme.DARK : Theme.NORMAL;
     }
 
-    public void save() {
-        JsonObject root = new JsonObject();
-        save(root);
+    public Theme getTheme() {
+        return theme;
     }
 
-    private void save(JsonObject root) {
-        root.addProperty("dark_mode", darkMode);
+    public void setTheme(Theme theme) {
+        this.theme = theme;
     }
 }
