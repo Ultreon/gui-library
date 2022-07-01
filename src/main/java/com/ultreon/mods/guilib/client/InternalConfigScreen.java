@@ -12,7 +12,7 @@ import net.minecraft.network.chat.TranslatableComponent;
 public class InternalConfigScreen extends GenericMenuScreen {
 
     public InternalConfigScreen(Screen back) {
-        super(new Properties().titleLang("gui.ultreon.gui_lib.config.title").back(back));
+        super(new Properties().titleLang("gui.ultreon.gui_lib.config.title"));
 
         addButtonRow(new TranslatableComponent("gui.ultreon.gui_lib.config.theme").append(UltreonGuiLib.getTheme().getDisplayName()), this::changeTheme);
         addButtonRow(new TranslatableComponent("gui.ultreon.gui_lib.config.title_style").append(UltreonGuiLib.getTitleStyle().getDisplayName()), this::changeTitleStyle);

@@ -103,11 +103,11 @@ public class List extends AbstractWidget implements ContainerEventHandler, Reloa
         if (hasSearch) {
             this.searchBox = new EditBox(this.font, x + LIST_BORDER_WIDTH + 28, y + LIST_BORDER_WIDTH + 78, width - 28 - LIST_BORDER_WIDTH * 2, 16, SEARCH_HINT) {
                 @Override
-                public void render(@NotNull PoseStack pose, int mouseX, int mouseY, float frameTime) {
+                public void render(@NotNull PoseStack pose, int mouseX, int mouseY, float partialTicks) {
                     this.x = List.this.x + LIST_BORDER_WIDTH + 4 + 12 + 4;
                     this.y = List.this.y + LIST_BORDER_WIDTH + 4 + 1;
 
-                    super.render(pose, mouseX, mouseY, frameTime);
+                    super.render(pose, mouseX, mouseY, partialTicks);
                 }
             };
             this.searchBox.setMaxLength(32);
@@ -132,11 +132,11 @@ public class List extends AbstractWidget implements ContainerEventHandler, Reloa
             }
 
             @Override
-            public void render(@NotNull PoseStack pose, int mouseX, int mouseY, float frameTime) {
+            public void render(@NotNull PoseStack pose, int mouseX, int mouseY, float partialTicks) {
                 this.y0 = List.this.y + LIST_BORDER_WIDTH + List.this.headerHeight;
                 this.y1 = List.this.y + LIST_BORDER_WIDTH + List.this.height - LIST_BORDER_WIDTH * 2;
 
-                super.render(pose, mouseX, mouseY, frameTime);
+                super.render(pose, mouseX, mouseY, partialTicks);
             }
         };
         this.list.changeFocus(true);
@@ -163,15 +163,15 @@ public class List extends AbstractWidget implements ContainerEventHandler, Reloa
     }
 
     @Override
-    public void render(@NotNull PoseStack pose, int mouseX, int mouseY, float frameTime) {
+    public void render(@NotNull PoseStack pose, int mouseX, int mouseY, float partialTicks) {
         RenderSystem.setShaderTexture(0, guiTexture);
         // List border
         final int lb = LIST_BORDER_WIDTH; // lb == List Border
-        
+
         // End pos
         final int x1 = x + width;
         final int y1 = y + height;
-        
+
         // Pos X
         final int sx = x;
         final int mx = x + lb;
@@ -209,9 +209,9 @@ public class List extends AbstractWidget implements ContainerEventHandler, Reloa
         // Search glass
         blit(pose, x + lb + 3, y + lb + 3, 12, 12, 51, 1, 12, 12, TEX_W, TEX_H);
 
-        this.list.render(pose, mouseX, mouseY, frameTime);
+        this.list.render(pose, mouseX, mouseY, partialTicks);
         if (searchBox != null) {
-            this.searchBox.render(pose, mouseX, mouseY, frameTime);
+            this.searchBox.render(pose, mouseX, mouseY, partialTicks);
         }
     }
 
@@ -437,7 +437,7 @@ public class List extends AbstractWidget implements ContainerEventHandler, Reloa
         }
 
         @Override
-        public void render(@NotNull PoseStack pose, int mouseX, int mouseY, float frameTime) {
+        public void render(@NotNull PoseStack pose, int mouseX, int mouseY, float partialTicks) {
             double scaleFactor = this.mc.getWindow().getGuiScale();
 
             int yi = y0 + (60 - 18); // Idk anymore
@@ -449,17 +449,20 @@ public class List extends AbstractWidget implements ContainerEventHandler, Reloa
                     (int) ((double) (yj) * scaleFactor)
             );
             synchronized (entriesLock) {
-                super.render(pose, mouseX, mouseY, frameTime);
+                super.render(pose, mouseX, mouseY, partialTicks);
             }
             RenderSystem.disableScissor();
         }
 
         @Override
         public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
-            if (pButton == 0) {
-                Entry entry = getEntryAtPosition(pMouseX, pMouseY);
-                if (entry != null && entry.click()) return true;
-            }
+//            if (pButton == 0) {
+//                Entry entry = getEntryAtPosition(pMouseX, pMouseY);
+//                if (entry != null && entry.click()) {
+//                    setSelected(entry);
+//                    return true;
+//                }
+//            }
             return super.mouseClicked(pMouseX, pMouseY, pButton);
         }
 

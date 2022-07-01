@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 public interface IToolbarItem extends Widget {
     @Override
-    void render(@NotNull PoseStack pose, int mouseX, int mouseY, float frameTime);
+    void render(@NotNull PoseStack pose, int mouseX, int mouseY, float partialTicks);
 
     int width();
 

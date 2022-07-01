@@ -29,6 +29,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
@@ -62,6 +63,7 @@ public abstract class GenericMenuScreen extends BaseScreen implements ReloadsThe
     private final boolean panorama;
     private Theme theme;
     private boolean initialized;
+    private ResourceLocation titleBackground;
 
     protected GenericMenuScreen(Properties properties) {
         super(properties.title);
@@ -261,6 +263,116 @@ public abstract class GenericMenuScreen extends BaseScreen implements ReloadsThe
     }
 
     @SuppressWarnings("unused")
+    public <T extends Widget> T addStatic(T widget, int height, int widgetWidth, int deltaX, int deltaY, int widgetOffset) {
+        if (this.frozen) {
+            return null;
+        }
+
+        this.rows.add(new Row(ImmutableList.of(widget), height, widgetWidth, deltaX, deltaY, widgetOffset));
+        addRenderableOnly(widget);
+        return widget;
+    }
+
+    @SuppressWarnings("unused")
+    public <T extends Widget> T addStatic(T widget, int height, int widgetWidth, int deltaX, int deltaY, int widgetOffset, int u, int v) {
+        if (this.frozen) {
+            return null;
+        }
+
+        this.rows.add(new Row(ImmutableList.of(widget), height, widgetWidth, deltaX, deltaY, widgetOffset, u, v));
+        addRenderableOnly(widget);
+        return widget;
+    }
+
+    @SuppressWarnings("unused")
+    public <T extends Widget> T addStatic(T widget, int height, int widgetWidth, int widgetHeight, int deltaX, int deltaY, int widgetOffset, int u, int v) {
+        if (this.frozen) {
+            return null;
+        }
+
+        this.rows.add(new Row(ImmutableList.of(widget), height, widgetWidth, widgetHeight, deltaX, deltaY, widgetOffset, u, v));
+        addRenderableOnly(widget);
+        return widget;
+    }
+
+    @SuppressWarnings("unused")
+    public <T extends Widget> T addStatic(T widget, int height, int widgetWidth, int widgetHeight, int deltaX, int deltaY, int widgetOffset, int u, int v, int uh) {
+        if (this.frozen) {
+            return null;
+        }
+
+        this.rows.add(new Row(ImmutableList.of(widget), height, widgetWidth, widgetHeight, deltaX, deltaY, widgetOffset, u, v, uh));
+        addRenderableOnly(widget);
+        return widget;
+    }
+
+    @SuppressWarnings("unused")
+    public <T extends Widget> T addStatic(T widget, int height, int widgetWidth, int widgetHeight, int deltaX, int deltaY, int widgetOffset, int u, int v, int uh, int uw) {
+        if (this.frozen) {
+            return null;
+        }
+
+        this.rows.add(new Row(ImmutableList.of(widget), height, widgetWidth, widgetHeight, deltaX, deltaY, widgetOffset, u, v, uh, uw));
+        addRenderableOnly(widget);
+        return widget;
+    }
+
+    @SuppressWarnings("unused")
+    public <T extends GuiEventListener & Widget & NarratableEntry> T addRenderableWidget(T widget, int height, int widgetWidth, int deltaX, int deltaY, int widgetOffset) {
+        if (this.frozen) {
+            return null;
+        }
+
+        this.rows.add(new Row(ImmutableList.of(widget), height, widgetWidth, deltaX, deltaY, widgetOffset));
+        addRenderableWidget(widget);
+        return widget;
+    }
+
+    @SuppressWarnings("unused")
+    public <T extends GuiEventListener & Widget & NarratableEntry> T addRenderableWidget(T widget, int height, int widgetWidth, int deltaX, int deltaY, int widgetOffset, int u, int v) {
+        if (this.frozen) {
+            return null;
+        }
+
+        this.rows.add(new Row(ImmutableList.of(widget), height, widgetWidth, deltaX, deltaY, widgetOffset, u, v));
+        addRenderableWidget(widget);
+        return widget;
+    }
+
+    @SuppressWarnings("unused")
+    public <T extends GuiEventListener & Widget & NarratableEntry> T addRenderableWidget(T widget, int height, int widgetWidth, int widgetHeight, int deltaX, int deltaY, int widgetOffset, int u, int v) {
+        if (this.frozen) {
+            return null;
+        }
+
+        this.rows.add(new Row(ImmutableList.of(widget), height, widgetWidth, widgetHeight, deltaX, deltaY, widgetOffset, u, v));
+        addRenderableWidget(widget);
+        return widget;
+    }
+
+    @SuppressWarnings("unused")
+    public <T extends GuiEventListener & Widget & NarratableEntry> T addRenderableWidget(T widget, int height, int widgetWidth, int widgetHeight, int deltaX, int deltaY, int widgetOffset, int u, int v, int uh) {
+        if (this.frozen) {
+            return null;
+        }
+
+        this.rows.add(new Row(ImmutableList.of(widget), height, widgetWidth, widgetHeight, deltaX, deltaY, widgetOffset, u, v, uh));
+        addRenderableWidget(widget);
+        return widget;
+    }
+
+    @SuppressWarnings("unused")
+    public <T extends GuiEventListener & Widget & NarratableEntry> T addRenderableWidget(T widget, int height, int widgetWidth, int widgetHeight, int deltaX, int deltaY, int widgetOffset, int u, int v, int uh, int uw) {
+        if (this.frozen) {
+            return null;
+        }
+
+        this.rows.add(new Row(ImmutableList.of(widget), height, widgetWidth, widgetHeight, deltaX, deltaY, widgetOffset, u, v, uh, uw));
+        addRenderableWidget(widget);
+        return widget;
+    }
+
+    @SuppressWarnings("unused")
     public List addListRow(int count) {
         return addListRow(count, false);
     }
@@ -425,46 +537,69 @@ public abstract class GenericMenuScreen extends BaseScreen implements ReloadsThe
 
     }
 
-    public final void render(@NotNull PoseStack pose, int mouseX, int mouseY, float frameTime) {
+    public final void render(@NotNull PoseStack pose, int mouseX, int mouseY, float partialTicks) {
+        // Pre rendering.
         onPreRender();
-        if (this.panorama) this.renderPanorama(pose, frameTime);
-        this.renderBackground(pose);
+
+        // Renders the background.
+        if (this.panorama) renderPanorama(pose, partialTicks);
+        renderBackground(pose);
 
         int curY = top();
         int index = 0;
 
         // Title rendering (if present).
-        RenderSystem.setShaderTexture(0, background);
-
         switch (this.titleStyle) {
             // Render no title. Only the top border.
             case HIDDEN -> {
-                this.blit(pose, left(), top(), 0, 21, width(), 4);
+                RenderSystem.setShaderTexture(0, background);
+
+                // Draw the top part of the frame.
+                blit(pose, left(), top(), 0, 21, width(), 4);
                 index++;
                 curY += 4;
             }
             // Render normal title and the top border.
             case NORMAL -> {
-                this.blit(pose, left(), top(), 0, 21, width(), 16);
-                this.font.draw(pose, this.title, (int) (left() + width() / 2f - this.font.width(this.title.getString()) / 2), top() + 6, this.titleColor);
+                RenderSystem.setShaderTexture(0, titleBackground);
+
+                // Draw the title background.
+                blit(pose, left(), top(), 0, 21, width(), 16);
+
+                // Draw the title.
+                font.draw(pose, this.title, (int) (left() + width() / 2f - this.font.width(this.title.getString()) / 2), top() + 6, this.titleColor);
+
                 index++;
                 curY += 16;
             }
             // Render detached title and the top border.
             case DETACHED -> {
-                blit(pose, left(), top(), 0, 0, width(), 25);
-                this.font.draw(pose, this.title, (int) (left() + width() / 2f - this.font.width(this.title.getString()) / 2), top() + 6, this.titleColor);
+                RenderSystem.setShaderTexture(0, titleBackground);
+
+                // Detached part of frame, where the title is.
+                blit(pose, left(), top(), 0, 0, width(), 20);
+
+                // Render the frame part (attached part) with the normal background (fixes issues with mixed theme).
+                RenderSystem.setShaderTexture(0, background);
+                blit(pose, left(), top() + 21, 0, 21, width(), 16);
+
+                // Draw the title.
+                font.draw(pose, this.title, (int) (left() + width() / 2f - this.font.width(this.title.getString()) / 2), top() + 6, this.titleColor);
+
                 index++;
                 curY += 25;
             }
             default -> throw new IllegalStateException("Unexpected value: " + titleStyle);
         }
 
+        // Title rendering (if present).
+        RenderSystem.setShaderTexture(0, background);
 
-        renderRows(pose, mouseX, mouseY, frameTime, curY, index);
+        // Render the widget rows.
+        renderRows(pose, mouseX, mouseY, partialTicks, curY, index);
 
-        super.render(pose, mouseX, mouseY, frameTime);
-
+        // Post rendering.
+        super.render(pose, mouseX, mouseY, partialTicks);
         onPostRender();
     }
 
@@ -477,10 +612,10 @@ public abstract class GenericMenuScreen extends BaseScreen implements ReloadsThe
         }
     }
 
-    @SuppressWarnings({"DuplicatedCode", "ConstantConditions", "UnusedAssignment"})
+    @SuppressWarnings({"DuplicatedCode"})
     public void renderPanorama(PoseStack pose, float partialTicks) {
-        // Nonnull Requirements
-        Objects.requireNonNull(this.minecraft);
+        // Non-null requirements.
+        Objects.requireNonNull(this.minecraft, "The screen's Minecraft instance cannot be null!");
 
         PanoramaScreen.panorama.render(partialTicks, minecraft.screen == this ? 1f : 0f);
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
@@ -489,12 +624,6 @@ public abstract class GenericMenuScreen extends BaseScreen implements ReloadsThe
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         blit(pose, 0, 0, this.width, this.height, 0.0F, 0.0F, 16, 128, 16, 128);
-
-        int index = 0;
-        if (!UltreonGuiLib.isModDev()) {
-            drawString(pose, mc.font, "UltreonGuiLib Client: " + UltreonGuiLib.MOD_VERSION, 0, this.height - (10 + (index++) * (this.font.lineHeight + 1)), 0xffffff);
-            drawString(pose, mc.font, "UltreonGuiLib: " + UltreonGuiLib.MOD_VERSION, 0, this.height - (10 + (index++) * (this.font.lineHeight + 1)), 0xffffff);
-        }
     }
 
     private void renderRows(@NotNull PoseStack pose, int mouseX, int mouseY, float partialTicks, int y, int index) {
@@ -648,8 +777,12 @@ public abstract class GenericMenuScreen extends BaseScreen implements ReloadsThe
         this.titleStyle = UltreonGuiLib.getTitleStyle();
         this.background = UltreonGuiLib.res(switch (theme) {
             case DARK -> "textures/gui/menu/generic/generic_menu_dark.png";
+            case LIGHT, MIX -> "textures/gui/menu/generic/generic_menu_light.png";
+            default -> "textures/gui/menu/generic/generic_menu.png";
+        });
+        this.titleBackground = UltreonGuiLib.res(switch (theme) {
+            case DARK, MIX -> "textures/gui/menu/generic/generic_menu_dark.png";
             case LIGHT -> "textures/gui/menu/generic/generic_menu_light.png";
-            case MIX -> "textures/gui/menu/generic/generic_menu_mix.png";
             default -> "textures/gui/menu/generic/generic_menu.png";
         });
         for (Row row : rows) {

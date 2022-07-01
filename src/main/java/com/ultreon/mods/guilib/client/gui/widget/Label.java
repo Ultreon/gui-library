@@ -47,7 +47,7 @@ public class Label implements Widget, ReloadsTheme {
     }
 
     @Override
-    public void render(@NotNull PoseStack pose, int mouseX, int mouseY, float frameTime) {
+    public void render(@NotNull PoseStack pose, int mouseX, int mouseY, float partialTicks) {
         if (shadow) {
             this.font.drawShadow(pose, message, x, y, getColor());
         } else {

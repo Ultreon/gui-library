@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.ultreon.mods.guilib.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "ultreon-gui-lib.refmap.json",
+  "mixins": [
+  ],
+  "client": [
+    "MouseHandlerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

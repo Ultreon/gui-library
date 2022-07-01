@@ -24,15 +24,15 @@ public abstract class FullscreenRenderScreen extends BaseScreen {
     public abstract void renderBackground(@NotNull PoseStack pose);
 
     @Override
-    public void render(@NotNull PoseStack pose, int mouseX, int mouseY, float frameTime) {
+    public void render(@NotNull PoseStack pose, int mouseX, int mouseY, float partialTicks) {
         renderBackground(pose);
 
-        renderToolbar(pose, mouseX, mouseY, frameTime);
+        renderToolbar(pose, mouseX, mouseY, partialTicks);
 
-        super.render(pose, mouseX, mouseY, frameTime);
+        super.render(pose, mouseX, mouseY, partialTicks);
     }
 
-    private void renderToolbar(PoseStack pose, int mouseX, int mouseY, float frameTime) {
+    private void renderToolbar(PoseStack pose, int mouseX, int mouseY, float partialTicks) {
         final int paddings = ITEM_PADDING * Math.max(items.size() - 1, 0);
         final int width = items.stream().mapToInt(IToolbarItem::width).sum() + paddings;
         final int height = items.stream().mapToInt(IToolbarItem::height).max().orElse(0);
@@ -49,7 +49,7 @@ public abstract class FullscreenRenderScreen extends BaseScreen {
                 toolbarItem.x = x;
                 toolbarItem.y = y;
             }
-            item.render(pose, mouseX, mouseY, frameTime);
+            item.render(pose, mouseX, mouseY, partialTicks);
 
             x += width1;
         }

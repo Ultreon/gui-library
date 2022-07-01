@@ -43,14 +43,14 @@ public abstract class PanoramaScreen extends BaseScreen {
     /**
      * Render the panorama background/
      *
-     * @param pose pose stack.
-     * @param frameTime render frame time.
+     * @param pose         pose stack.
+     * @param partialTicks render frame time.
      */
-    public void renderPanorama(PoseStack pose, float frameTime) {
+    public void renderPanorama(PoseStack pose, float partialTicks) {
         // Nonnull Requirements
         Objects.requireNonNull(this.minecraft);
 
-        panorama.render(frameTime, 1.0f);
+        panorama.render(partialTicks, 1.0f);
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, PANORAMA_OVERLAY);
         RenderSystem.enableBlend();

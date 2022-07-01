@@ -5,6 +5,7 @@ import com.ultreon.mods.guilib.client.gui.ReloadsTheme;
 import com.ultreon.mods.guilib.client.gui.Theme;
 import com.ultreon.mods.guilib.client.gui.screen.TitleStyle;
 import net.minecraft.client.Minecraft;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.ConfigGuiHandler;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -13,7 +14,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 
-@Mod.EventBusSubscriber(modid = UltreonGuiLib.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@Mod.EventBusSubscriber(modid = UltreonGuiLib.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class Config {
     public static final ForgeConfigSpec.EnumValue<Theme> THEME;
     public static final ForgeConfigSpec.EnumValue<TitleStyle> TITLE_STYLE;

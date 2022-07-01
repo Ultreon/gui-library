@@ -5,6 +5,8 @@ import com.ultreon.mods.guilib.client.gui.Theme;
 import com.ultreon.mods.guilib.client.gui.screen.TitleStyle;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -46,11 +48,35 @@ public class UltreonGuiLib implements ReloadsTheme {
 
     }
 
+    public static boolean isClientSide() {
+        return FMLEnvironment.dist.isClient();
+    }
+
+    public static boolean isServerSide() {
+        return FMLEnvironment.dist.isDedicatedServer();
+    }
+
+    public static boolean hasClientSide() {
+        return FMLEnvironment.dist.isClient();
+    }
+
+    @SuppressWarnings("UnnecessaryDefault")
+    public static boolean hasServerSide() {
+        return switch (FMLEnvironment.dist) {
+            case CLIENT, DEDICATED_SERVER -> true;
+            default -> false;
+        };
+    }
+
     /**
      * Mod manager construction creator that exists to create the mod instance that is needed for the mod to exist and even work lol.
      */
     public UltreonGuiLib() {
         instance = this;
+
+        if (!hasClientSide()) {
+            return;
+        }
 
         // Register the setup method for modloading
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
@@ -91,10 +117,12 @@ public class UltreonGuiLib implements ReloadsTheme {
         return !FMLEnvironment.production;
     }
 
+    @OnlyIn(Dist.CLIENT)
     public static Theme getTheme() {
         return Config.THEME.get();
     }
 
+    @OnlyIn(Dist.CLIENT)
     public static void setTheme(Theme theme) {
         Config.THEME.set(theme);
         Config.THEME.save();
@@ -102,10 +130,12 @@ public class UltreonGuiLib implements ReloadsTheme {
         instance.reloadTheme();
     }
 
+    @OnlyIn(Dist.CLIENT)
     public static TitleStyle getTitleStyle() {
         return Config.TITLE_STYLE.get();
     }
 
+    @OnlyIn(Dist.CLIENT)
     public static void setTitleStyle(TitleStyle style) {
         Config.TITLE_STYLE.set(style);
         Config.TITLE_STYLE.save();
@@ -113,6 +143,7 @@ public class UltreonGuiLib implements ReloadsTheme {
         instance.reloadTheme();
     }
 
+    @OnlyIn(Dist.CLIENT)
     public void reloadTheme() {
         if (Minecraft.getInstance().screen instanceof ReloadsTheme) {
             ((ReloadsTheme) Minecraft.getInstance().screen).reloadTheme();

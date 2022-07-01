@@ -94,7 +94,7 @@ public class ContextMenu extends AbstractContainerWidget {
     }
 
     @Override
-    public void render(@NotNull PoseStack pose, int mouseX, int mouseY, float frameTime) {
+    public void render(@NotNull PoseStack pose, int mouseX, int mouseY, float partialTicks) {
         RenderSystem.setShaderTexture(0, WIDGETS);
 
         Component message = getMessage();
@@ -136,7 +136,7 @@ public class ContextMenu extends AbstractContainerWidget {
             menuItem.x = x;
             menuItem.y = y;
             menuItem.setWidth(Mth.clamp(maxMinWidth, menuItem.getMinWidth(), menuItem.getMaxWidth()));
-            menuItem.render(pose, mouseX, mouseY, frameTime);
+            menuItem.render(pose, mouseX, mouseY, partialTicks);
 
             y += menuItem.getHeight() + 2;
         }

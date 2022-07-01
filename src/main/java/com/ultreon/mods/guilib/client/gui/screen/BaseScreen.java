@@ -51,13 +51,21 @@ public abstract class BaseScreen extends Screen implements ReloadsTheme {
         this.theme = UltreonGuiLib.getTheme();
     }
 
+    public void show() {
+        Minecraft.getInstance().pushGuiLayer(this);
+    }
+
+    protected final Theme getTheme() {
+        return theme;
+    }
+
     @Override
     public void reloadTheme() {
         this.theme = UltreonGuiLib.getTheme();
     }
 
     @Override
-    public void render(@NotNull PoseStack pose, int mouseX, int mouseY, float frameTime) {
+    public void render(@NotNull PoseStack pose, int mouseX, int mouseY, float partialTicks) {
         renderCloseButton(pose, mouseX, mouseY);
 
         boolean flag = contextMenu != null && contextMenu.isMouseOver(mouseX, mouseY);
@@ -65,17 +73,17 @@ public abstract class BaseScreen extends Screen implements ReloadsTheme {
         int mx = flag ? Integer.MIN_VALUE : mouseX;
         int my = flag ? Integer.MIN_VALUE : mouseY;
         for (Widget widget : this.renderables) {
-            widget.render(pose, mx, my, frameTime);
+            widget.render(pose, mx, my, partialTicks);
         }
 
-        renderContextMenu(pose, mouseX, mouseY, frameTime);
+        renderContextMenu(pose, mouseX, mouseY, partialTicks);
     }
 
-    private void renderContextMenu(PoseStack pose, int mouseX, int mouseY, float frameTime) {
+    private void renderContextMenu(PoseStack pose, int mouseX, int mouseY, float partialTicks) {
         ContextMenu menu = contextMenu;
         if (menu != null) {
             RenderSystem.disableDepthTest();
-            menu.render(pose, mouseX, mouseY, frameTime);
+            menu.render(pose, mouseX, mouseY, partialTicks);
         }
     }
 
@@ -201,14 +209,34 @@ public abstract class BaseScreen extends Screen implements ReloadsTheme {
         return isAtCloseButton((int) mouseX, (int) mouseY);
     }
 
-    public static void renderFrame(PoseStack pose, int x, int y, int width, int height, boolean darkMode) {
-        renderFrame(pose, x, y, width, height, darkMode, 0);
-    }
-
     public static void renderFrame(PoseStack pose, int x, int y, int width, int height, Theme theme) {
         renderFrame(pose, x, y, width, height, theme, 0);
     }
 
+    @SuppressWarnings("PointlessArithmeticExpression")
+    public static void renderFrame(PoseStack pose, int x, int y, int width, int height, Theme theme, int u) {
+        RenderSystem.setShaderTexture(0, switch (theme) {
+            case DARK -> WIDGETS_DARK;
+            case LIGHT, MIX -> WIDGETS_LIGHT;
+            default -> WIDGETS;
+        });
+        blit(pose, x, y, 7, 7, u + 0, 0, 7, 7, 256, 256);
+        blit(pose, x + 7, y, width, 7, u + 7, 0, 7, 7, 256, 256);
+        blit(pose, x + 7 + width, y, 7, 7, u + 14, 0, 7, 7, 256, 256);
+        blit(pose, x, y + 7, 7, height, u + 0, 7, 7, 7, 256, 256);
+        blit(pose, x + 7, y + 7, width, height, u + 7, 7, 7, 7, 256, 256);
+        blit(pose, x + 7 + width, y + 7, 7, height, u + 14, 7, 7, 7, 256, 256);
+        blit(pose, x, y + 7 + height, 7, 7, u + 0, 14, 7, 7, 256, 256);
+        blit(pose, x + 7, y + 7 + height, width, 7, u + 7, 14, 7, 7, 256, 256);
+        blit(pose, x + 7 + width, y + 7 + height, 7, 7, u + 14, 14, 7, 7, 256, 256);
+    }
+
+    @Deprecated
+    public static void renderFrame(PoseStack pose, int x, int y, int width, int height, boolean darkMode) {
+        renderFrame(pose, x, y, width, height, darkMode, 0);
+    }
+
+    @Deprecated
     @SuppressWarnings("PointlessArithmeticExpression")
     public static void renderFrame(PoseStack pose, int x, int y, int width, int height, boolean darkMode, int u) {
         RenderSystem.setShaderTexture(0, darkMode ? WIDGETS_DARK : WIDGETS);
@@ -223,10 +251,14 @@ public abstract class BaseScreen extends Screen implements ReloadsTheme {
         blit(pose, x + 7 + width, y + 7 + height, 7, 7, u + 14, 14, 7, 7, 256, 256);
     }
 
+    public static void renderTitleFrame(PoseStack pose, int x, int y, int width, int height, Theme theme) {
+        renderFrame(pose, x, y + 5, width, height - 10, theme, 0);
+    }
+
     @SuppressWarnings("PointlessArithmeticExpression")
-    public static void renderFrame(PoseStack pose, int x, int y, int width, int height, Theme theme, int u) {
+    public static void renderTitleFrame(PoseStack pose, int x, int y, int width, int height, Theme theme, int u) {
         RenderSystem.setShaderTexture(0, switch (theme) {
-            case DARK -> WIDGETS_DARK;
+            case DARK, MIX -> WIDGETS_DARK;
             case LIGHT -> WIDGETS_LIGHT;
             default -> WIDGETS;
         });
