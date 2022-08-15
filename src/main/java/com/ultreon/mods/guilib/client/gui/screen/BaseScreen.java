@@ -32,6 +32,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.phys.Vec2;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -87,6 +88,7 @@ public abstract class BaseScreen extends Screen implements ReloadsTheme {
         }
     }
 
+    @Nullable
     public abstract Vec2 getCloseButtonPos();
 
     protected final boolean isPointBetween(int mouseX, int mouseY, int x, int y, int w, int h) {

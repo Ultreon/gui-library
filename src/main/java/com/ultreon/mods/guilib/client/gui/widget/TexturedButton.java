@@ -23,7 +23,7 @@ import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("DuplicatedCode")
-public abstract sealed class TexturedButton extends Button permits ThemedButton {
+public abstract sealed class TexturedButton extends BaseButton permits ThemedButton {
     public TexturedButton(int x, int y, int width, int height, Component title, OnPress pressedAction) {
         super(x, y, width, height, title, pressedAction);
     }

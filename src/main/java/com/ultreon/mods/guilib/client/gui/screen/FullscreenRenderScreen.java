@@ -29,6 +29,8 @@ public abstract class FullscreenRenderScreen extends BaseScreen {
 
         renderToolbar(pose, mouseX, mouseY, partialTicks);
 
+        drawCenteredString(pose, font, getTitle(), width / 2, 9, 0xFFFFFF);
+
         super.render(pose, mouseX, mouseY, partialTicks);
     }
 
@@ -38,11 +40,11 @@ public abstract class FullscreenRenderScreen extends BaseScreen {
         final int height = items.stream().mapToInt(IToolbarItem::height).max().orElse(0);
         final int frameWidth = width - 4;
         final int frameHeight = height - 4;
-        final int frameX = this.width / 2 - ((frameWidth) / 2);
+        final int frameX = this.width / 2 - frameWidth / 2 - 5;
         final int frameY = this.height - frameHeight - BOTTOM_MARGIN - 14;
         renderFrame(pose, frameX, frameY, frameWidth, frameHeight, Config.THEME.get());
         int x = frameX + 5;
-        final int y = frameY + 2 + 7 - 5;
+        final int y = frameY + 2 + 7 - 4;
         for (IToolbarItem item : items) {
             int width1 = item.width();
             if (item instanceof ToolbarItem toolbarItem) {
@@ -51,8 +53,18 @@ public abstract class FullscreenRenderScreen extends BaseScreen {
             }
             item.render(pose, mouseX, mouseY, partialTicks);
 
-            x += width1;
+            x += width1 + ITEM_PADDING;
         }
+    }
+
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        for (IToolbarItem baseItem : items) {
+            if (baseItem instanceof ToolbarItem item && item.isActive() && item.mouseClicked(mouseX, mouseY, button)) {
+                return true;
+            }
+        }
+
+        return super.mouseClicked(mouseX, mouseY, button)/* || this.filterList.mouseClicked(mouseX, mouseY, button)*/;
     }
 
     public <T extends IToolbarItem> T addToolbarItem(T t) {

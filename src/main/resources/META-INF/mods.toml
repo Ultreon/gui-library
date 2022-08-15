@@ -6,7 +6,7 @@
 # The name of the mod loader type to load - for regular FML @Mod mods it should be javafml
 modLoader = "javafml"
 # Change this if you require a certain version of KotlinForForge
-loaderVersion = "[39,)"
+loaderVersion = "[40,)"
 # The license for you mod. This is mandatory metadata and allows for easier comprehension of your redistributive properties.
 # Review your options at https://choosealicense.com/. All rights reserved is the default copyright stance, and is thus the default here.
 license = "GNU LGPL 3.0"
@@ -24,35 +24,24 @@ version = "${file.jarVersion}" #mandatory
 displayName = "Ultreon Gui Lib" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification <here>
 updateJSONURL = "https://ultreon.github.io/updates/mods/forge/gui-lib.json" #optional
-# A URL for the "homepage" for this mod, displayed in the mod UI
-#displayURL="http://example.com/" #optional
-# A file name (in the root of the mod JAR) containing a logo for display
+displayURL="https://ultreon.github.io/web/" #optional
 #logoFile="ultreon-gui-lib.png" #optional
-# A text field displayed in the mod UI
 #credits="Thanks for this example mod goes to Java" #optional
-# A text field displayed in the mod UI
 authors = "Qboi123" #optional
-# The description text for the mod (multi line!) (#mandatory)
 description = '''
 GUI Library for mods by Ultreon or Qboi123
 '''
-# A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
+
 [[dependencies.ultreon_gui_lib]] #optional
-# the modid of the dependency
 modId = "forge" #mandatory
-# Does this dependency have to exist - if not, ordering below must be specified
 mandatory = true #mandatory
-# The version range of the dependency
-versionRange = "[39,)" #mandatory
-# An ordering relationship for the dependency - BEFORE or AFTER required if the relationship is not mandatory
+versionRange = "[40,)" #mandatory
 ordering = "NONE"
-# Side this dependency is applied on - BOTH, CLIENT or SERVER
-side = "BOTH"
-# Here's another dependency
+side = "CLIENT"
+
 [[dependencies.ultreon_gui_lib]]
 modId = "minecraft"
 mandatory = true
-# This version range declares a minimum of the current minecraft version up to but not including the next major version
-versionRange = "[1.18.1,1.19)"
+versionRange = "[1.18.2,1.19)"
 ordering = "NONE"
-side = "BOTH"
+side = "CLIENT"
