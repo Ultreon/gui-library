@@ -20,7 +20,7 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
 group 'com.ultreon.mods'
-version '0.0.1-dev10'
+version '0.0.1-alpha1'
 
 compileJava.options.encoding = "UTF-8"
 javadoc.options.encoding = "UTF-8"
@@ -204,6 +204,7 @@ publishing {
     }
     repositories {
         maven {
+            name "Git"
             url "file://${project.projectDir}/.mcmodsrepo"
         }
         mavenLocal()
@@ -213,4 +214,3 @@ publishing {
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
 }
-
